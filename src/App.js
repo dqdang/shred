@@ -107,7 +107,15 @@ function App() {
     // Filter cards into categories based on specified rarities
     const commons = getCardsByRarity('Common');
     const uncommons = getCardsByRarity('Uncommon');
-    
+
+    const reverseHolos = allCards.filter(card => 
+      card.rarity && (
+        card.rarity === 'Common' ||
+        card.rarity === 'Uncommon' ||
+        card.rarity === 'Rare'
+      )
+    );
+
     // Separating standard rares from ultra rares for weighted pulling
     const standardRares = allCards.filter(card => 
       card.rarity && (
@@ -160,8 +168,16 @@ function App() {
 
     // 3. Add 1 Reverse Holo (any rarity)
     // Select a random card from *all* available cards for the reverse holo slot
+    let reverseHoloCard = null;
     if (allCards.length > 0) {
-      const reverseHoloCard = getRandomCard(allCards);
+      const roll = Math.random();
+      if (roll < ULTRA_RARE_CHANCE && ultraRares.length > 0) {
+        // Pull an ultra rare card
+        reverseHoloCard = getRandomCard(ultraRares);
+      }
+      else {
+        reverseHoloCard = getRandomCard(reverseHolos);
+      }
       addCardToPack(reverseHoloCard, true); // Mark as reverse holo
     } else {
       console.warn("No cards available to select a reverse holo.");
